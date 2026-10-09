@@ -10,7 +10,7 @@ class QListWidget;
 class QStackedWidget;
 
 /**
- * Application shell: sidebar navigation driving a QStackedWidget of pages.
+ * Application shell: a branded sidebar driving a QStackedWidget of pages.
  * Emits `logoutRequested` and lets the controller own the session lifecycle.
  */
 class MainWindow : public QMainWindow
@@ -27,8 +27,11 @@ private slots:
     void onNavigationChanged(int row);
 
 private:
+    QWidget *buildSidebar(const QString &username);
+
     QListWidget *m_sidebar;
     QStackedWidget *m_pages;
+    InicioPage *m_inicioPage;
     PacientesPage *m_pacientesPage;
     TurnosPage *m_turnosPage;
 };
