@@ -110,7 +110,7 @@ void NuevoTurnoDialog::onSearchPatient()
 {
     const QString dni = m_dni->text().trimmed();
     if (dni.isEmpty()) {
-        m_status->setText(QStringLiteral("Ingresá un DNI para buscar."));
+        m_status->setText(QStringLiteral("Ingrese un DNI para buscar."));
         m_status->show();
         return;
     }
@@ -156,7 +156,7 @@ void NuevoTurnoDialog::onSearchPatient()
 void NuevoTurnoDialog::onSubmit()
 {
     if (m_pacienteId <= 0) {
-        m_status->setText(QStringLiteral("Buscá y seleccioná un paciente antes de crear el turno."));
+        m_status->setText(QStringLiteral("Busque y seleccione un paciente antes de crear el turno."));
         m_status->show();
         return;
     }

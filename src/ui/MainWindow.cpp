@@ -39,11 +39,17 @@ MainWindow::MainWindow(ApiClient *api, const QString &username, QWidget *parent)
     m_pages->addWidget(m_pacientesPage);
     m_pages->addWidget(m_turnosPage);
     m_pages->addWidget(new PlaceholderPage(QStringLiteral("Aptitud"),
-                                           QStringLiteral("Gestión de aptitud y diferimientos."), this));
+                                           QStringLiteral("Consulte y gestione la aptitud y los "
+                                                          "diferimientos de los donantes."),
+                                           QStyle::SP_DialogApplyButton, this));
     m_pages->addWidget(new PlaceholderPage(QStringLiteral("Donaciones"),
-                                           QStringLiteral("Registro y seguimiento de donaciones."), this));
+                                           QStringLiteral("Registre y haga seguimiento de las "
+                                                          "donaciones de sangre."),
+                                           QStyle::SP_DialogSaveButton, this));
     m_pages->addWidget(new PlaceholderPage(QStringLiteral("Reportes"),
-                                           QStringLiteral("Reportes operativos y estadísticas."), this));
+                                           QStringLiteral("Genere reportes operativos y "
+                                                          "estadísticas del banco de sangre."),
+                                           QStyle::SP_FileDialogInfoView, this));
 
     auto *central = new QWidget(this);
     auto *layout = new QHBoxLayout(central);
@@ -54,6 +60,9 @@ MainWindow::MainWindow(ApiClient *api, const QString &username, QWidget *parent)
     setCentralWidget(central);
 
     connect(m_sidebar, &QListWidget::currentRowChanged, this, &MainWindow::onNavigationChanged);
+    connect(m_inicioPage, &InicioPage::navigateRequested, this, [this](int index) {
+        m_sidebar->setCurrentRow(index);
+    });
     m_sidebar->setCurrentRow(0);
 }
 

@@ -33,7 +33,7 @@ void AppController::start()
 
         if (m_login) {
             m_login->setBusy(false);
-            m_login->showError(QStringLiteral("La sesión guardada expiró. Iniciá sesión de nuevo."));
+            m_login->showError(QStringLiteral("La sesión guardada expiró. Inicie sesión de nuevo."));
         }
     });
 }
@@ -92,5 +92,5 @@ void AppController::onSessionExpired()
 
     showLogin();
     if (m_login)
-        m_login->showError(QStringLiteral("Tu sesión expiró. Iniciá sesión de nuevo."));
+        m_login->showError(QStringLiteral("Tu sesión expiró. Inicie sesión de nuevo."));
 }

@@ -163,7 +163,7 @@ ApiClient::Response ApiClient::parseReply(QNetworkReply *reply) const
     if (response.status == 0) {
         response.networkError = true;
         response.errorMessage = QStringLiteral("No se pudo conectar con el servidor. "
-                                              "Verificá la URL y tu conexión.");
+                                              "Verifique la URL y su conexión.");
         return response;
     }
 
