@@ -28,11 +28,19 @@ add_executable(DonemosDesktop
     src/ui/LoginWindow.h
     src/ui/MainWindow.cpp
     src/ui/MainWindow.h
+    src/ui/UiUtils.h
 
     src/ui/pages/InicioPage.cpp
     src/ui/pages/InicioPage.h
+    src/ui/pages/PacientesPage.cpp
+    src/ui/pages/PacientesPage.h
     src/ui/pages/PlaceholderPage.cpp
     src/ui/pages/PlaceholderPage.h
+
+    src/ui/dialogs/NuevoPacienteDialog.cpp
+    src/ui/dialogs/NuevoPacienteDialog.h
+    src/ui/dialogs/PacienteDetalleDialog.cpp
+    src/ui/dialogs/PacienteDetalleDialog.h
 )
 
 target_include_directories(DonemosDesktop PRIVATE src)

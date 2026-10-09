@@ -3,6 +3,7 @@
 #include <QMainWindow>
 
 class ApiClient;
+class PacientesPage;
 class QListWidget;
 class QStackedWidget;
 
@@ -26,4 +27,5 @@ private slots:
 private:
     QListWidget *m_sidebar;
     QStackedWidget *m_pages;
+    PacientesPage *m_pacientesPage;
 };
