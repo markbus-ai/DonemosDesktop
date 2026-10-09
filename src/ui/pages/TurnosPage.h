@@ -4,9 +4,9 @@
 #include <QWidget>
 
 class ApiClient;
+class DataTable;
 class QLabel;
 class QPushButton;
-class QTableWidget;
 
 /** Appointment list with refresh and creation (including the 409 force flow). */
 class TurnosPage : public QWidget
@@ -26,7 +26,7 @@ private:
     void setLoading(bool loading);
 
     ApiClient *m_api;
-    QTableWidget *m_table;
+    DataTable *m_table;
     QLabel *m_status;
     QPushButton *m_refreshButton;
     QPushButton *m_newButton;

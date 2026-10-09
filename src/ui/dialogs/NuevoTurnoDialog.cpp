@@ -1,18 +1,18 @@
 #include "ui/dialogs/NuevoTurnoDialog.h"
 
 #include "api/ApiClient.h"
+#include "ui/Theme.h"
+#include "ui/dialogs/TurnoWarningDialog.h"
 
 #include <QComboBox>
 #include <QDateEdit>
 #include <QDialogButtonBox>
 #include <QFormLayout>
 #include <QHBoxLayout>
-#include <QInputDialog>
 #include <QJsonArray>
 #include <QJsonObject>
 #include <QLabel>
 #include <QLineEdit>
-#include <QMessageBox>
 #include <QPushButton>
 #include <QTimeEdit>
 #include <QUrl>
@@ -31,21 +31,29 @@ NuevoTurnoDialog::NuevoTurnoDialog(ApiClient *api, QWidget *parent)
     , m_buttons(new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, this))
 {
     setWindowTitle(QStringLiteral("Nuevo turno"));
-    setMinimumWidth(430);
+    setMinimumWidth(480);
+
+    auto *title = new QLabel(QStringLiteral("Nuevo turno"), this);
+    title->setObjectName(QStringLiteral("PageTitle"));
+    auto *subtitle = new QLabel(QStringLiteral("Agende una nueva donación"), this);
+    subtitle->setObjectName(QStringLiteral("PageSubtitle"));
 
     m_dni->setPlaceholderText(QStringLiteral("DNI del paciente"));
-    m_patientLabel->setStyleSheet(QStringLiteral("color: #666;"));
+    m_patientLabel->setObjectName(QStringLiteral("InfoText"));
 
     m_fecha->setDisplayFormat(QStringLiteral("dd/MM/yyyy"));
     m_fecha->setCalendarPopup(true);
     m_hora->setDisplayFormat(QStringLiteral("HH:mm"));
 
-    m_status->setStyleSheet(QStringLiteral("color: #b00020;"));
+    m_status->setObjectName(QStringLiteral("ErrorText"));
     m_status->setWordWrap(true);
     m_status->hide();
 
     m_buttons->button(QDialogButtonBox::Ok)->setText(QStringLiteral("Crear turno"));
     m_buttons->button(QDialogButtonBox::Cancel)->setText(QStringLiteral("Cancelar"));
+    m_buttons->button(QDialogButtonBox::Ok)->setProperty("variant", "primary");
+    m_buttons->button(QDialogButtonBox::Ok)->setCursor(Qt::PointingHandCursor);
+    m_buttons->button(QDialogButtonBox::Cancel)->setCursor(Qt::PointingHandCursor);
     m_buttons->button(QDialogButtonBox::Ok)->setDefault(true);
     m_buttons->button(QDialogButtonBox::Cancel)->setAutoDefault(false);
 
@@ -54,6 +62,7 @@ NuevoTurnoDialog::NuevoTurnoDialog(ApiClient *api, QWidget *parent)
     patientRow->addWidget(m_searchButton);
 
     auto *form = new QFormLayout;
+    form->setSpacing(Theme::SpacingSm);
     form->addRow(QStringLiteral("Paciente"), patientRow);
     form->addRow(QString(), m_patientLabel);
     form->addRow(QStringLiteral("Tipo de donación"), m_tipo);
@@ -61,6 +70,11 @@ NuevoTurnoDialog::NuevoTurnoDialog(ApiClient *api, QWidget *parent)
     form->addRow(QStringLiteral("Hora"), m_hora);
 
     auto *layout = new QVBoxLayout(this);
+    layout->setContentsMargins(Theme::SpacingLg, Theme::SpacingLg,
+                               Theme::SpacingLg, Theme::SpacingLg);
+    layout->setSpacing(Theme::SpacingMd);
+    layout->addWidget(title);
+    layout->addWidget(subtitle);
     layout->addLayout(form);
     layout->addWidget(m_status);
     layout->addWidget(m_buttons);
@@ -201,37 +215,11 @@ void NuevoTurnoDialog::submit(bool force, const QString &motivo)
 
 void NuevoTurnoDialog::handleWarning(const QString &message, const QStringList &warnings)
 {
-    QString text = message.isEmpty()
-        ? QStringLiteral("El turno tiene advertencias.")
-        : message;
-    if (!warnings.isEmpty())
-        text += QStringLiteral("\n\n- ") + warnings.join(QStringLiteral("\n- "));
-
-    QMessageBox box(this);
-    box.setWindowTitle(QStringLiteral("Advertencia"));
-    box.setIcon(QMessageBox::Warning);
-    box.setText(text);
-    QPushButton *forceButton = box.addButton(QStringLiteral("Forzar turno"), QMessageBox::AcceptRole);
-    box.addButton(QStringLiteral("Cancelar"), QMessageBox::RejectRole);
-    box.exec();
-
-    if (box.clickedButton() != forceButton)
+    TurnoWarningDialog warning(message, warnings, this);
+    if (warning.exec() != QDialog::Accepted)
         return;
 
-    bool accepted = false;
-    const QString motivo = QInputDialog::getText(this,
-                                                 QStringLiteral("Motivo"),
-                                                 QStringLiteral("Motivo para forzar el turno:"),
-                                                 QLineEdit::Normal,
-                                                 QString(),
-                                                 &accepted);
-    if (!accepted || motivo.trimmed().isEmpty()) {
-        m_status->setText(QStringLiteral("Para forzar el turno tenés que indicar un motivo."));
-        m_status->show();
-        return;
-    }
-
-    submit(true, motivo.trimmed());
+    submit(true, warning.motivo());
 }
 
 void NuevoTurnoDialog::setBusy(bool busy)

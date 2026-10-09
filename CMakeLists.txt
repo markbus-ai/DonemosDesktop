@@ -56,6 +56,8 @@ add_executable(DonemosDesktop
     src/ui/dialogs/PacienteDetalleDialog.h
     src/ui/dialogs/NuevoTurnoDialog.cpp
     src/ui/dialogs/NuevoTurnoDialog.h
+    src/ui/dialogs/TurnoWarningDialog.cpp
+    src/ui/dialogs/TurnoWarningDialog.h
 )
 
 target_include_directories(DonemosDesktop PRIVATE src)
