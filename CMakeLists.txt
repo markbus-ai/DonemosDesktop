@@ -24,6 +24,9 @@ add_executable(DonemosDesktop
     src/app/AppController.cpp
     src/app/AppController.h
 
+    src/ui/Theme.cpp
+    src/ui/Theme.h
+
     src/ui/LoginWindow.cpp
     src/ui/LoginWindow.h
     src/ui/MainWindow.cpp
@@ -47,6 +50,11 @@ add_executable(DonemosDesktop
 )
 
 target_include_directories(DonemosDesktop PRIVATE src)
+
+qt_add_resources(DonemosDesktop "brand"
+    PREFIX "/"
+    FILES resources/style.qss
+)
 
 target_link_libraries(DonemosDesktop PRIVATE
     Qt6::Widgets
