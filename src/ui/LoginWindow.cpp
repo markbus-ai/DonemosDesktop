@@ -1,13 +1,36 @@
 #include "ui/LoginWindow.h"
 
 #include "api/ApiClient.h"
+#include "ui/Theme.h"
 
-#include <QFormLayout>
 #include <QJsonObject>
 #include <QLabel>
 #include <QLineEdit>
 #include <QPushButton>
+#include <QScreen>
+#include <QShowEvent>
+#include <QStyle>
 #include <QVBoxLayout>
+#include <QWidget>
+
+namespace {
+
+/** Labeled input field: caption above the widget. */
+QWidget *makeField(const QString &caption, QWidget *field, QWidget *parent)
+{
+    auto *container = new QWidget(parent);
+    auto *layout = new QVBoxLayout(container);
+    layout->setContentsMargins(0, 0, 0, 0);
+    layout->setSpacing(Theme::SpacingXs);
+
+    auto *label = new QLabel(caption, container);
+    label->setObjectName(QStringLiteral("FieldLabel"));
+    layout->addWidget(label);
+    layout->addWidget(field);
+    return container;
+}
+
+} // namespace
 
 LoginWindow::LoginWindow(ApiClient *api, QWidget *parent)
     : QWidget(parent)
@@ -19,18 +42,23 @@ LoginWindow::LoginWindow(ApiClient *api, QWidget *parent)
     , m_loginButton(new QPushButton(QStringLiteral("Ingresar"), this))
 {
     setWindowTitle(QStringLiteral("Donemos - Ingreso"));
-    setMinimumSize(420, 320);
+    setObjectName(QStringLiteral("LoginRoot"));
+    setAttribute(Qt::WA_StyledBackground, true);
+    setFixedSize(560, 640);
 
-    auto *title = new QLabel(QStringLiteral("Donemos"), this);
-    QFont titleFont = title->font();
-    titleFont.setPointSize(titleFont.pointSize() + 10);
-    titleFont.setBold(true);
-    title->setFont(titleFont);
-    title->setAlignment(Qt::AlignCenter);
+    // --- Branded card --------------------------------------------------------
+    auto *card = new QWidget(this);
+    card->setObjectName(QStringLiteral("Card"));
+    card->setAttribute(Qt::WA_StyledBackground, true);
+    card->setFixedWidth(420);
 
-    auto *subtitle = new QLabel(QStringLiteral("Sistema de banco de sangre"), this);
+    auto *brand = new QLabel(QStringLiteral("Donemos"), card);
+    brand->setObjectName(QStringLiteral("LoginBrand"));
+    brand->setAlignment(Qt::AlignCenter);
+
+    auto *subtitle = new QLabel(QStringLiteral("Sistema de banco de sangre"), card);
+    subtitle->setObjectName(QStringLiteral("LoginSubtitle"));
     subtitle->setAlignment(Qt::AlignCenter);
-    subtitle->setStyleSheet(QStringLiteral("color: #666;"));
 
     m_username->setPlaceholderText(QStringLiteral("Usuario"));
     m_password->setPlaceholderText(QStringLiteral("Contraseña"));
@@ -38,28 +66,63 @@ LoginWindow::LoginWindow(ApiClient *api, QWidget *parent)
     m_baseUrl->setText(m_api->baseUrl());
     m_baseUrl->setPlaceholderText(QStringLiteral("http://127.0.0.1:8000"));
 
+    m_status->setObjectName(QStringLiteral("StatusText"));
     m_status->setWordWrap(true);
     m_status->setAlignment(Qt::AlignCenter);
     m_status->hide();
 
-    auto *form = new QFormLayout;
-    form->addRow(QStringLiteral("Usuario"), m_username);
-    form->addRow(QStringLiteral("Contraseña"), m_password);
-    form->addRow(QStringLiteral("Servidor"), m_baseUrl);
+    m_loginButton->setProperty("variant", "primary");
+    m_loginButton->setCursor(Qt::PointingHandCursor);
+
+    auto *cardLayout = new QVBoxLayout(card);
+    cardLayout->setContentsMargins(Theme::SpacingXl, Theme::SpacingXl,
+                                   Theme::SpacingXl, Theme::SpacingXl);
+    cardLayout->setSpacing(Theme::SpacingMd);
+    cardLayout->addWidget(brand);
+    cardLayout->addWidget(subtitle);
+    cardLayout->addSpacing(Theme::SpacingSm);
+    cardLayout->addWidget(makeField(QStringLiteral("Usuario"), m_username, card));
+    cardLayout->addWidget(makeField(QStringLiteral("Contraseña"), m_password, card));
+    cardLayout->addWidget(makeField(QStringLiteral("Servidor"), m_baseUrl, card));
+    cardLayout->addWidget(m_status);
+    cardLayout->addSpacing(Theme::SpacingSm);
+    cardLayout->addWidget(m_loginButton);
+
+    auto *centering = new QHBoxLayout;
+    centering->addStretch();
+    centering->addWidget(card);
+    centering->addStretch();
 
     auto *layout = new QVBoxLayout(this);
-    layout->setContentsMargins(40, 32, 40, 32);
-    layout->setSpacing(14);
-    layout->addWidget(title);
-    layout->addWidget(subtitle);
-    layout->addSpacing(10);
-    layout->addLayout(form);
-    layout->addWidget(m_status);
-    layout->addWidget(m_loginButton);
+    layout->setContentsMargins(Theme::SpacingLg, Theme::SpacingLg,
+                               Theme::SpacingLg, Theme::SpacingLg);
+    layout->addStretch();
+    layout->addLayout(centering);
+    layout->addStretch();
 
     connect(m_loginButton, &QPushButton::clicked, this, &LoginWindow::onLoginClicked);
     connect(m_username, &QLineEdit::returnPressed, this, &LoginWindow::onLoginClicked);
     connect(m_password, &QLineEdit::returnPressed, this, &LoginWindow::onLoginClicked);
+    connect(m_baseUrl, &QLineEdit::returnPressed, this, &LoginWindow::onLoginClicked);
+
+    setTabOrder(m_username, m_password);
+    setTabOrder(m_password, m_baseUrl);
+    setTabOrder(m_baseUrl, m_loginButton);
+    m_username->setFocus();
+}
+
+void LoginWindow::showEvent(QShowEvent *event)
+{
+    QWidget::showEvent(event);
+
+    if (m_centered)
+        return;
+
+    if (QScreen *screen = this->screen()) {
+        const QRect available = screen->availableGeometry();
+        move(available.center() - rect().center());
+        m_centered = true;
+    }
 }
 
 void LoginWindow::setBusy(bool busy)
@@ -84,8 +147,9 @@ void LoginWindow::showInfo(const QString &message)
 void LoginWindow::setStatus(const QString &message, bool isError)
 {
     m_status->setText(message);
-    m_status->setStyleSheet(isError ? QStringLiteral("color: #b00020;")
-                                    : QStringLiteral("color: #666;"));
+    m_status->setProperty("tone", isError ? "error" : "info");
+    m_status->style()->unpolish(m_status);
+    m_status->style()->polish(m_status);
     m_status->setVisible(!message.isEmpty());
 }
 
@@ -95,7 +159,7 @@ void LoginWindow::onLoginClicked()
     const QString password = m_password->text();
 
     if (username.isEmpty() || password.isEmpty()) {
-        showError(QStringLiteral("Ingresá usuario y contraseña."));
+        showError(QStringLiteral("Ingrese usuario y contraseña."));
         return;
     }
 
@@ -129,7 +193,7 @@ void LoginWindow::onLoginClicked()
         if (response.status == 401) {
             showError(QStringLiteral("Usuario o contraseña incorrectos."));
         } else if (response.status == 429) {
-            showError(QStringLiteral("Demasiados intentos fallidos. Esperá unos minutos y volvé a intentar."));
+            showError(QStringLiteral("Demasiados intentos fallidos. Espere unos minutos e intente de nuevo."));
         } else {
             showError(response.errorMessage);
         }

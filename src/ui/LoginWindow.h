@@ -10,6 +10,8 @@ class QPushButton;
 /**
  * Staff authentication form. On success it stores the bearer token through the
  * shared ApiClient and emits `loggedIn` with the resolved username.
+ *
+ * Renders as a centered branded card on a SURFACE background.
  */
 class LoginWindow : public QWidget
 {
@@ -25,6 +27,9 @@ public:
 signals:
     void loggedIn(const QString &username);
 
+protected:
+    void showEvent(QShowEvent *event) override;
+
 private slots:
     void onLoginClicked();
 
@@ -37,4 +42,5 @@ private:
     QLineEdit *m_baseUrl;
     QLabel *m_status;
     QPushButton *m_loginButton;
+    bool m_centered = false;
 };

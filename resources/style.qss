@@ -77,6 +77,34 @@ QLabel {
     font-weight: 600;
 }
 
+/* --- Login ---------------------------------------------------------------- */
+#LoginBrand {
+    color: #E5484D;
+    font-size: 30px;
+    font-weight: 800;
+}
+
+#LoginSubtitle {
+    color: #8E8E93;
+    font-size: 13px;
+}
+
+#FieldLabel {
+    color: #1C1C1E;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+#StatusText[tone="error"] {
+    color: #E5484D;
+    font-size: 12px;
+}
+
+#StatusText[tone="info"] {
+    color: #8E8E93;
+    font-size: 12px;
+}
+
 /* --- Page header ---------------------------------------------------------- */
 #PageTitle {
     color: #1C1C1E;
