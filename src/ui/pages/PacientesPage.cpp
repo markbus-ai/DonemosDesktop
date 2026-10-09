@@ -1,7 +1,12 @@
 #include "ui/pages/PacientesPage.h"
 
 #include "api/ApiClient.h"
+#include "ui/Theme.h"
 #include "ui/UiUtils.h"
+#include "ui/components/Card.h"
+#include "ui/components/DataTable.h"
+#include "ui/components/PageHeader.h"
+#include "ui/components/StatusChip.h"
 #include "ui/dialogs/NuevoPacienteDialog.h"
 #include "ui/dialogs/PacienteDetalleDialog.h"
 
@@ -30,76 +35,90 @@ PacientesPage::PacientesPage(ApiClient *api, QWidget *parent)
     : QWidget(parent)
     , m_api(api)
     , m_search(new QLineEdit(this))
-    , m_table(new QTableWidget(this))
+    , m_table(new DataTable(this))
     , m_pageLabel(new QLabel(this))
     , m_status(new QLabel(this))
+    , m_searchButton(new QPushButton(QStringLiteral("Buscar"), this))
     , m_prev(new QPushButton(QStringLiteral("Anterior"), this))
     , m_next(new QPushButton(QStringLiteral("Siguiente"), this))
     , m_newButton(new QPushButton(QStringLiteral("Nuevo paciente"), this))
 {
-    auto *title = new QLabel(QStringLiteral("Pacientes"), this);
-    QFont titleFont = title->font();
-    titleFont.setPointSize(titleFont.pointSize() + 8);
-    titleFont.setBold(true);
-    title->setFont(titleFont);
+    // --- Header --------------------------------------------------------------
+    auto *header = new PageHeader(QStringLiteral("Pacientes"),
+                                  QStringLiteral("Listado y búsqueda de donantes"), this);
+    m_newButton->setProperty("variant", "primary");
+    m_newButton->setCursor(Qt::PointingHandCursor);
+    header->addAction(m_newButton);
 
+    // --- Search card ---------------------------------------------------------
     m_search->setPlaceholderText(QStringLiteral("Buscar por DNI, nombre o apellido"));
+    m_search->setClearButtonEnabled(true);
+    m_searchButton->setCursor(Qt::PointingHandCursor);
 
-    auto *searchButton = new QPushButton(QStringLiteral("Buscar"), this);
+    auto *searchCard = new Card(this);
+    auto *searchRow = new QHBoxLayout;
+    searchRow->setSpacing(Theme::SpacingSm);
+    searchRow->addWidget(m_search, 1);
+    searchRow->addWidget(m_searchButton);
+    searchCard->addLayout(searchRow);
 
-    auto *headerRow = new QHBoxLayout;
-    headerRow->addWidget(m_search, 1);
-    headerRow->addWidget(searchButton);
-    headerRow->addWidget(m_newButton);
+    m_status->setObjectName(QStringLiteral("ErrorText"));
+    m_status->setWordWrap(true);
+    m_status->hide();
 
-    m_table->setColumnCount(5);
-    m_table->setHorizontalHeaderLabels({
+    // --- Table card ----------------------------------------------------------
+    auto *tableCard = new Card(this);
+    tableCard->body()->setSpacing(Theme::SpacingSm);
+
+    QTableWidget *table = m_table->table();
+    m_table->setHeaders({
         QStringLiteral("DNI"),
         QStringLiteral("Nombre"),
         QStringLiteral("Apellido"),
         QStringLiteral("Teléfono"),
         QStringLiteral("Aptitud"),
     });
-    m_table->verticalHeader()->setVisible(false);
-    m_table->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    m_table->setSelectionBehavior(QAbstractItemView::SelectRows);
-    m_table->setSelectionMode(QAbstractItemView::SingleSelection);
-    m_table->setAlternatingRowColors(true);
-    m_table->horizontalHeader()->setStretchLastSection(true);
-    m_table->horizontalHeader()->setSectionResizeMode(kColumnNombre, QHeaderView::Stretch);
-    m_table->horizontalHeader()->setSectionResizeMode(kColumnApellido, QHeaderView::Stretch);
-
-    m_status->setStyleSheet(QStringLiteral("color: #b00020;"));
-    m_status->hide();
+    table->horizontalHeader()->setSectionResizeMode(kColumnDni, QHeaderView::ResizeToContents);
+    table->horizontalHeader()->setSectionResizeMode(kColumnNombre, QHeaderView::Stretch);
+    table->horizontalHeader()->setSectionResizeMode(kColumnApellido, QHeaderView::Stretch);
+    table->horizontalHeader()->setSectionResizeMode(kColumnTelefono, QHeaderView::ResizeToContents);
+    table->horizontalHeader()->setSectionResizeMode(kColumnAptitud, QHeaderView::ResizeToContents);
 
     auto *pagination = new QHBoxLayout;
+    pagination->setSpacing(Theme::SpacingSm);
+    m_pageLabel->setObjectName(QStringLiteral("PageSubtitle"));
     pagination->addWidget(m_prev);
     pagination->addWidget(m_pageLabel);
     pagination->addWidget(m_next);
     pagination->addStretch();
 
-    auto *layout = new QVBoxLayout(this);
-    layout->setContentsMargins(24, 20, 24, 20);
-    layout->setSpacing(12);
-    layout->addWidget(title);
-    layout->addLayout(headerRow);
-    layout->addWidget(m_status);
-    layout->addWidget(m_table, 1);
-    layout->addLayout(pagination);
+    tableCard->addWidget(m_status);
+    tableCard->body()->addWidget(m_table, 1);
+    tableCard->addLayout(pagination);
 
-    connect(searchButton, &QPushButton::clicked, this, &PacientesPage::onSearch);
+    auto *layout = new QVBoxLayout(this);
+    layout->setContentsMargins(Theme::SpacingLg, Theme::SpacingLg,
+                               Theme::SpacingLg, Theme::SpacingLg);
+    layout->setSpacing(Theme::SpacingMd);
+    layout->addWidget(header);
+    layout->addWidget(searchCard);
+    layout->addWidget(tableCard, 1);
+
+    connect(m_searchButton, &QPushButton::clicked, this, &PacientesPage::onSearch);
     connect(m_search, &QLineEdit::returnPressed, this, &PacientesPage::onSearch);
     connect(m_prev, &QPushButton::clicked, this, &PacientesPage::onPrev);
     connect(m_next, &QPushButton::clicked, this, &PacientesPage::onNext);
     connect(m_newButton, &QPushButton::clicked, this, &PacientesPage::onNewPaciente);
-    connect(m_table, &QTableWidget::cellDoubleClicked, this, &PacientesPage::onRowActivated);
+    connect(table, &QTableWidget::cellDoubleClicked, this, &PacientesPage::onRowActivated);
 
     // Keep a predictable keyboard order: search, actions, then the table.
-    QWidget::setTabOrder(m_search, searchButton);
-    QWidget::setTabOrder(searchButton, m_newButton);
-    QWidget::setTabOrder(m_newButton, m_table);
-    QWidget::setTabOrder(m_table, m_prev);
+    QWidget::setTabOrder(m_search, m_searchButton);
+    QWidget::setTabOrder(m_searchButton, m_newButton);
+    QWidget::setTabOrder(m_newButton, table);
+    QWidget::setTabOrder(table, m_prev);
     QWidget::setTabOrder(m_prev, m_next);
+
+    m_table->showEmpty(QStringLiteral("No hay pacientes para mostrar."));
 }
 
 void PacientesPage::refresh()
@@ -133,7 +152,7 @@ void PacientesPage::onNewPaciente()
 
 void PacientesPage::onRowActivated(int row, int /*column*/)
 {
-    QTableWidgetItem *item = m_table->item(row, kColumnDni);
+    QTableWidgetItem *item = m_table->table()->item(row, kColumnDni);
     if (!item)
         return;
 
@@ -156,6 +175,7 @@ void PacientesPage::loadPage(int page)
 
     setLoading(true);
     m_status->hide();
+    m_table->showLoading();
 
     m_api->get(path, [this, page](const ApiClient::Response &response) {
         setLoading(false);
@@ -163,16 +183,18 @@ void PacientesPage::loadPage(int page)
         if (!response.ok) {
             m_status->setText(response.errorMessage);
             m_status->show();
+            m_table->showEmpty(QStringLiteral("No se pudieron cargar los pacientes."));
             return;
         }
 
         const QJsonObject root = response.json.object();
-        fillTable(root.value(QStringLiteral("data")).toArray());
+        const QJsonArray rows = root.value(QStringLiteral("data")).toArray();
+        fillTable(rows);
 
         const QJsonObject meta = root.value(QStringLiteral("meta")).toObject();
         m_currentPage = meta.value(QStringLiteral("current_page")).toInt(page);
         m_lastPage = qMax(1, meta.value(QStringLiteral("last_page")).toInt(1));
-        const int total = meta.value(QStringLiteral("total")).toInt(m_table->rowCount());
+        const int total = meta.value(QStringLiteral("total")).toInt(rows.size());
 
         m_pageLabel->setText(QStringLiteral("Página %1 de %2 · %3 registros")
                                  .arg(m_currentPage)
@@ -180,13 +202,22 @@ void PacientesPage::loadPage(int page)
                                  .arg(total));
         m_prev->setEnabled(m_currentPage > 1);
         m_next->setEnabled(m_currentPage < m_lastPage);
+
+        if (rows.isEmpty()) {
+            m_table->showEmpty(m_query.isEmpty()
+                                   ? QStringLiteral("No hay pacientes registrados todavía.")
+                                   : QStringLiteral("No hay pacientes que coincidan con la búsqueda."));
+        } else {
+            m_table->showTable();
+        }
     });
 }
 
 void PacientesPage::fillTable(const QJsonArray &rows)
 {
-    m_table->setRowCount(0);
-    m_table->setRowCount(rows.size());
+    QTableWidget *table = m_table->table();
+    table->setRowCount(0);
+    table->setRowCount(rows.size());
 
     for (int row = 0; row < rows.size(); ++row) {
         const QJsonObject patient = rows.at(row).toObject();
@@ -198,20 +229,23 @@ void PacientesPage::fillTable(const QJsonArray &rows)
         dniItem->setData(kRoleDni, dni);
         dniItem->setData(kRoleAptitud, aptitud);
 
-        m_table->setItem(row, kColumnDni, dniItem);
-        m_table->setItem(row, kColumnNombre,
-                         new QTableWidgetItem(patient.value(QStringLiteral("nombre")).toString()));
-        m_table->setItem(row, kColumnApellido,
-                         new QTableWidgetItem(patient.value(QStringLiteral("apellido")).toString()));
-        m_table->setItem(row, kColumnTelefono,
-                         new QTableWidgetItem(patient.value(QStringLiteral("telefono")).toString()));
-        m_table->setItem(row, kColumnAptitud, new QTableWidgetItem(aptitudLabel(aptitud)));
+        table->setItem(row, kColumnDni, dniItem);
+        table->setItem(row, kColumnNombre,
+                       new QTableWidgetItem(patient.value(QStringLiteral("nombre")).toString()));
+        table->setItem(row, kColumnApellido,
+                       new QTableWidgetItem(patient.value(QStringLiteral("apellido")).toString()));
+        table->setItem(row, kColumnTelefono,
+                       new QTableWidgetItem(patient.value(QStringLiteral("telefono")).toString()));
+        table->setCellWidget(row, kColumnAptitud,
+                             StatusChip::makeCell(aptitudLabel(aptitud),
+                                                  StatusChip::aptitudKind(aptitud)));
     }
 }
 
 void PacientesPage::setLoading(bool loading)
 {
     m_search->setEnabled(!loading);
+    m_searchButton->setEnabled(!loading);
     m_newButton->setEnabled(!loading);
     setCursor(loading ? Qt::BusyCursor : Qt::ArrowCursor);
 }

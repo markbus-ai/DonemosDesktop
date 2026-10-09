@@ -1,12 +1,17 @@
 #include "ui/dialogs/PacienteDetalleDialog.h"
 
 #include "api/ApiClient.h"
+#include "ui/Theme.h"
 #include "ui/UiUtils.h"
+#include "ui/components/Card.h"
+#include "ui/components/StatusChip.h"
 
 #include <QDialogButtonBox>
 #include <QFormLayout>
+#include <QHBoxLayout>
 #include <QLabel>
 #include <QPushButton>
+#include <QStyle>
 #include <QVBoxLayout>
 
 PacienteDetalleDialog::PacienteDetalleDialog(ApiClient *api,
@@ -18,13 +23,17 @@ PacienteDetalleDialog::PacienteDetalleDialog(ApiClient *api,
     , m_dni(dni)
     , m_aptitudTipo(aptitudTipo)
     , m_status(new QLabel(this))
+    , m_aptitudChip(StatusChip::make(aptitudLabel(aptitudTipo), StatusChip::aptitudKind(aptitudTipo), this))
     , m_form(new QFormLayout)
 {
     setWindowTitle(QStringLiteral("Paciente %1").arg(dni));
-    setMinimumWidth(400);
+    setMinimumWidth(460);
+    setModal(true);
 
-    m_status->setStyleSheet(QStringLiteral("color: #b00020;"));
-    m_status->setWordWrap(true);
+    auto *title = new QLabel(QStringLiteral("Ficha del paciente"), this);
+    title->setObjectName(QStringLiteral("PageTitle"));
+    auto *subtitle = new QLabel(QStringLiteral("DNI %1").arg(dni), this);
+    subtitle->setObjectName(QStringLiteral("PageSubtitle"));
 
     addRow(m_form, QStringLiteral("DNI"));
     addRow(m_form, QStringLiteral("Nombre"));
@@ -32,21 +41,39 @@ PacienteDetalleDialog::PacienteDetalleDialog(ApiClient *api,
     addRow(m_form, QStringLiteral("Teléfono"));
     addRow(m_form, QStringLiteral("Sexo"));
     addRow(m_form, QStringLiteral("Altura"));
-    addRow(m_form, QStringLiteral("Aptitud"));
+    m_form->addRow(QStringLiteral("Aptitud"), m_aptitudChip);
+
+    auto *card = new Card(this);
+    card->addLayout(m_form);
+
+    m_status->setObjectName(QStringLiteral("ErrorText"));
+    m_status->setWordWrap(true);
+    m_status->hide();
 
     auto *buttons = new QDialogButtonBox(QDialogButtonBox::Close, this);
     buttons->button(QDialogButtonBox::Close)->setText(QStringLiteral("Cerrar"));
+    buttons->button(QDialogButtonBox::Close)->setCursor(Qt::PointingHandCursor);
     connect(buttons, &QDialogButtonBox::rejected, this, &QDialog::reject);
 
+    auto *buttonsRow = new QHBoxLayout;
+    buttonsRow->addStretch();
+    buttonsRow->addWidget(buttons);
+
     auto *layout = new QVBoxLayout(this);
-    layout->addLayout(m_form);
+    layout->setContentsMargins(Theme::SpacingLg, Theme::SpacingLg,
+                               Theme::SpacingLg, Theme::SpacingLg);
+    layout->setSpacing(Theme::SpacingMd);
+    layout->addWidget(title);
+    layout->addWidget(subtitle);
+    layout->addWidget(card);
     layout->addWidget(m_status);
-    layout->addWidget(buttons);
+    layout->addLayout(buttonsRow);
 
     m_api->get(QStringLiteral("/api/pacientes/%1").arg(dni),
                [this](const ApiClient::Response &response) {
                    if (!response.ok) {
                        m_status->setText(response.errorMessage);
+                       m_status->show();
                        return;
                    }
                    populate(response.json.object());
@@ -82,5 +109,8 @@ void PacienteDetalleDialog::populate(const QJsonObject &patient)
     setValue(5, altura.isEmpty() ? QStringLiteral("Sin especificar")
                                  : QStringLiteral("%1 cm").arg(altura));
 
-    setValue(6, aptitudLabel(m_aptitudTipo));
+    m_aptitudChip->setText(aptitudLabel(m_aptitudTipo));
+    m_aptitudChip->setProperty("kind", StatusChip::aptitudKind(m_aptitudTipo));
+    m_aptitudChip->style()->unpolish(m_aptitudChip);
+    m_aptitudChip->style()->polish(m_aptitudChip);
 }

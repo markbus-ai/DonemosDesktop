@@ -4,10 +4,11 @@
 #include <QWidget>
 
 class ApiClient;
+class Card;
+class DataTable;
 class QLabel;
 class QLineEdit;
 class QPushButton;
-class QTableWidget;
 
 /** Paginated patient list with search, creation and a detail view. */
 class PacientesPage : public QWidget
@@ -34,9 +35,10 @@ private:
 
     ApiClient *m_api;
     QLineEdit *m_search;
-    QTableWidget *m_table;
+    DataTable *m_table;
     QLabel *m_pageLabel;
     QLabel *m_status;
+    QPushButton *m_searchButton;
     QPushButton *m_prev;
     QPushButton *m_next;
     QPushButton *m_newButton;

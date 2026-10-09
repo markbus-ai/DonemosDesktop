@@ -26,5 +26,6 @@ private:
     QString m_dni;
     QString m_aptitudTipo;
     QLabel *m_status;
+    QLabel *m_aptitudChip;
     QFormLayout *m_form;
 };

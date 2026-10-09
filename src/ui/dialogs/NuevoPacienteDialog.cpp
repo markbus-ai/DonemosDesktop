@@ -1,6 +1,7 @@
 #include "ui/dialogs/NuevoPacienteDialog.h"
 
 #include "api/ApiClient.h"
+#include "ui/Theme.h"
 
 #include <QComboBox>
 #include <QDialogButtonBox>
@@ -22,7 +23,8 @@ QWidget *wrapWithError(QWidget *field, QLabel *error, QWidget *parent)
     layout->setContentsMargins(0, 0, 0, 0);
     layout->setSpacing(2);
     layout->addWidget(field);
-    error->setStyleSheet(QStringLiteral("color: #b00020; font-size: 11px;"));
+    error->setStyleSheet(QStringLiteral("color: %1; font-size: 11px;")
+                             .arg(QString::fromLatin1(Theme::Error)));
     error->hide();
     layout->addWidget(error);
     return container;
@@ -52,7 +54,12 @@ NuevoPacienteDialog::NuevoPacienteDialog(ApiClient *api, QWidget *parent)
     , m_buttons(new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, this))
 {
     setWindowTitle(QStringLiteral("Nuevo paciente"));
-    setMinimumWidth(420);
+    setMinimumWidth(480);
+
+    auto *title = new QLabel(QStringLiteral("Nuevo paciente"), this);
+    title->setObjectName(QStringLiteral("PageTitle"));
+    auto *subtitle = new QLabel(QStringLiteral("Registre los datos del donante"), this);
+    subtitle->setObjectName(QStringLiteral("PageSubtitle"));
 
     m_sexo->addItem(QStringLiteral("Sin especificar"), QString());
     m_sexo->addItem(QStringLiteral("Femenino"), QStringLiteral("F"));
@@ -63,16 +70,20 @@ NuevoPacienteDialog::NuevoPacienteDialog(ApiClient *api, QWidget *parent)
     m_altura->setSuffix(QStringLiteral(" cm"));
     m_altura->setSpecialValueText(QStringLiteral("Sin especificar"));
 
-    m_status->setStyleSheet(QStringLiteral("color: #b00020;"));
+    m_status->setObjectName(QStringLiteral("ErrorText"));
     m_status->setWordWrap(true);
     m_status->hide();
 
     m_buttons->button(QDialogButtonBox::Ok)->setText(QStringLiteral("Guardar"));
     m_buttons->button(QDialogButtonBox::Cancel)->setText(QStringLiteral("Cancelar"));
+    m_buttons->button(QDialogButtonBox::Ok)->setProperty("variant", "primary");
+    m_buttons->button(QDialogButtonBox::Ok)->setCursor(Qt::PointingHandCursor);
+    m_buttons->button(QDialogButtonBox::Cancel)->setCursor(Qt::PointingHandCursor);
     m_buttons->button(QDialogButtonBox::Ok)->setDefault(true);
     m_buttons->button(QDialogButtonBox::Cancel)->setAutoDefault(false);
 
     auto *form = new QFormLayout;
+    form->setSpacing(Theme::SpacingSm);
     form->addRow(QStringLiteral("DNI *"), wrapWithError(m_dni, new QLabel(this), this));
     form->addRow(QStringLiteral("Nombre *"), wrapWithError(m_nombre, new QLabel(this), this));
     form->addRow(QStringLiteral("Apellido *"), wrapWithError(m_apellido, new QLabel(this), this));
@@ -81,6 +92,11 @@ NuevoPacienteDialog::NuevoPacienteDialog(ApiClient *api, QWidget *parent)
     form->addRow(QStringLiteral("Altura"), m_altura);
 
     auto *layout = new QVBoxLayout(this);
+    layout->setContentsMargins(Theme::SpacingLg, Theme::SpacingLg,
+                               Theme::SpacingLg, Theme::SpacingLg);
+    layout->setSpacing(Theme::SpacingMd);
+    layout->addWidget(title);
+    layout->addWidget(subtitle);
     layout->addLayout(form);
     layout->addWidget(m_status);
     layout->addWidget(m_buttons);
