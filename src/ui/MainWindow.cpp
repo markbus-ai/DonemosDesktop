@@ -4,6 +4,7 @@
 #include "ui/pages/InicioPage.h"
 #include "ui/pages/PacientesPage.h"
 #include "ui/pages/PlaceholderPage.h"
+#include "ui/pages/TurnosPage.h"
 
 #include <QAction>
 #include <QLabel>
@@ -18,6 +19,7 @@ MainWindow::MainWindow(ApiClient *api, const QString &username, QWidget *parent)
     , m_sidebar(new QListWidget(this))
     , m_pages(new QStackedWidget(this))
     , m_pacientesPage(new PacientesPage(api, this))
+    , m_turnosPage(new TurnosPage(api, this))
 {
     setWindowTitle(QStringLiteral("Donemos Desktop"));
     resize(1200, 760);
@@ -50,8 +52,7 @@ MainWindow::MainWindow(ApiClient *api, const QString &username, QWidget *parent)
     // --- Page stack ----------------------------------------------------------
     m_pages->addWidget(new InicioPage(username, this));
     m_pages->addWidget(m_pacientesPage);
-    m_pages->addWidget(new PlaceholderPage(QStringLiteral("Turnos"),
-                                           QStringLiteral("Agenda de turnos de donación."), this));
+    m_pages->addWidget(m_turnosPage);
     m_pages->addWidget(new PlaceholderPage(QStringLiteral("Aptitud"),
                                            QStringLiteral("Gestión de aptitud y diferimientos."), this));
     m_pages->addWidget(new PlaceholderPage(QStringLiteral("Donaciones"),
@@ -81,4 +82,6 @@ void MainWindow::onNavigationChanged(int row)
     // Lazy-load the data-backed pages the first time they become visible.
     if (m_pages->currentWidget() == m_pacientesPage)
         m_pacientesPage->refresh();
+    else if (m_pages->currentWidget() == m_turnosPage)
+        m_turnosPage->refresh();
 }

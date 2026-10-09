@@ -3,7 +3,9 @@
 #include <QMainWindow>
 
 class ApiClient;
+class InicioPage;
 class PacientesPage;
+class TurnosPage;
 class QListWidget;
 class QStackedWidget;
 
@@ -28,4 +30,5 @@ private:
     QListWidget *m_sidebar;
     QStackedWidget *m_pages;
     PacientesPage *m_pacientesPage;
+    TurnosPage *m_turnosPage;
 };
