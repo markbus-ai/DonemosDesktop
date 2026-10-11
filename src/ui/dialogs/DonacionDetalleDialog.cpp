@@ -5,8 +5,8 @@
 #include "ui/components/Card.h"
 #include "ui/components/DataTable.h"
 #include "ui/components/StatusChip.h"
+#include "util/DateUtils.h"
 
-#include <QDate>
 #include <QDialogButtonBox>
 #include <QFormLayout>
 #include <QHBoxLayout>
@@ -39,8 +39,7 @@ QString display(const QJsonValue &value)
 
 QString prettyDate(const QString &iso)
 {
-    const QDate date = QDate::fromString(iso, Qt::ISODate);
-    return date.isValid() ? date.toString(QStringLiteral("dd/MM/yyyy")) : display(iso);
+    return iso.isEmpty() ? QStringLiteral("—") : util::prettyDate(iso);
 }
 
 void addRow(QFormLayout *form, const QString &label, const QString &value)

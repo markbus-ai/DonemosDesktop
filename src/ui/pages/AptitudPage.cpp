@@ -8,6 +8,7 @@
 #include "ui/components/StatusChip.h"
 #include "ui/dialogs/AptitudDialog.h"
 #include "ui/dialogs/DeferralDialog.h"
+#include "util/DateUtils.h"
 
 #include <QDate>
 #include <QGridLayout>
@@ -19,17 +20,6 @@
 #include <QPushButton>
 #include <QUrl>
 #include <QVBoxLayout>
-
-namespace {
-
-/** ISO date (yyyy-MM-dd) rendered as dd/MM/yyyy, empty-safe. */
-QString prettyDate(const QString &iso)
-{
-    const QDate date = QDate::fromString(iso, Qt::ISODate);
-    return date.isValid() ? date.toString(QStringLiteral("dd/MM/yyyy")) : iso;
-}
-
-} // namespace
 
 AptitudPage::AptitudPage(ApiClient *api, QWidget *parent)
     : QWidget(parent)
@@ -292,7 +282,7 @@ void AptitudPage::loadPlatelets()
                            active ? QStringLiteral("Habilitadas") : QStringLiteral("Deshabilitadas"),
                            active ? QStringLiteral("success") : QStringLiteral("muted"));
         m_plateletInfo->setText(active && !hasta.isEmpty()
-                                    ? QStringLiteral("Vigente hasta %1").arg(prettyDate(hasta))
+                                    ? QStringLiteral("Vigente hasta %1").arg(util::prettyDate(hasta))
                                     : QString());
         m_enablePlateletsButton->setEnabled(!active);
         m_disablePlateletsButton->setEnabled(active);

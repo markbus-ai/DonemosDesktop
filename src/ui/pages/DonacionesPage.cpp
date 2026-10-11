@@ -7,6 +7,7 @@
 #include "ui/components/PageHeader.h"
 #include "ui/components/StatusChip.h"
 #include "ui/dialogs/DonacionDetalleDialog.h"
+#include "util/DateUtils.h"
 
 #include <QCheckBox>
 #include <QDate>
@@ -30,12 +31,6 @@ constexpr int kColumnComponentes = 4;
 constexpr int kColumnDescartada = 5;
 
 constexpr int kRoleRow = Qt::UserRole;
-
-QString prettyDate(const QString &iso)
-{
-    const QDate date = QDate::fromString(iso, Qt::ISODate);
-    return date.isValid() ? date.toString(QStringLiteral("dd/MM/yyyy")) : iso;
-}
 } // namespace
 
 DonacionesPage::DonacionesPage(ApiClient *api, QWidget *parent)
@@ -252,7 +247,7 @@ void DonacionesPage::fillTable(const QJsonArray &rows)
 
         table->setItem(row, kColumnNumero, numeroItem);
         table->setItem(row, kColumnFecha,
-                       new QTableWidgetItem(prettyDate(donation.value(QStringLiteral("fecha")).toString())));
+                       new QTableWidgetItem(util::prettyDate(donation.value(QStringLiteral("fecha")).toString())));
         table->setItem(row, kColumnPaciente, new QTableWidgetItem(pacienteName));
         table->setItem(row, kColumnTipo,
                        new QTableWidgetItem(tipo.value(QStringLiteral("nombre")).toString()));

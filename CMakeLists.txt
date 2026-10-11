@@ -13,6 +13,8 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTORCC ON)
 
+enable_testing()
+
 find_package(Qt6 REQUIRED COMPONENTS Widgets Network)
 
 add_executable(DonemosDesktop
@@ -95,3 +97,5 @@ set_target_properties(DonemosDesktop PROPERTIES
     WIN32_EXECUTABLE OFF
     MACOSX_BUNDLE OFF
 )
+
+add_subdirectory(tests)
