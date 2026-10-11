@@ -52,6 +52,9 @@ MainWindow::MainWindow(ApiClient *api, const QString &username, QWidget *parent)
                                            QStyle::SP_FileDialogInfoView, this));
 
     auto *central = new QWidget(this);
+    central->setObjectName(QStringLiteral("CentralArea"));
+    central->setAttribute(Qt::WA_StyledBackground, true);
+    m_pages->setAttribute(Qt::WA_StyledBackground, true);
     auto *layout = new QHBoxLayout(central);
     layout->setContentsMargins(0, 0, 0, 0);
     layout->setSpacing(0);

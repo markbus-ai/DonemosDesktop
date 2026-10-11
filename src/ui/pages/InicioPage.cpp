@@ -23,6 +23,7 @@ Card *makeQuickLink(const QString &title,
 {
     auto *card = new Card(parent);
     card->body()->setSpacing(Theme::SpacingSm);
+    card->setMaximumHeight(160);
 
     auto *titleLabel = new QLabel(title, card);
     titleLabel->setObjectName(QStringLiteral("CardTitle"));

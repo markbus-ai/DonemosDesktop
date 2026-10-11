@@ -15,6 +15,7 @@ QWidget {
 QMainWindow,
 QDialog,
 #ContentArea,
+#CentralArea,
 #LoginRoot {
     background-color: #F2F2F7;
 }
