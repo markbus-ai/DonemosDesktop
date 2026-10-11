@@ -1,10 +1,21 @@
 #include "ui/components/StatusChip.h"
 
+#include <QFont>
+#include <QFontMetrics>
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QWidget>
 
 namespace StatusChip {
+
+namespace {
+// Chip metrics must match the #Chip rule in resources/style.qss. The label
+// width is fixed from font metrics because a QLabel does not include the
+// stylesheet padding in its size hint, which clipped long labels inside
+// ResizeToContents table columns.
+constexpr int kChipFontPx = 11;
+constexpr int kChipHorizontalPadding = 26; // 12px per side + small buffer
+} // namespace
 
 QLabel *make(const QString &text, const QString &kind, QWidget *parent)
 {
@@ -12,8 +23,14 @@ QLabel *make(const QString &text, const QString &kind, QWidget *parent)
     chip->setObjectName(QStringLiteral("Chip"));
     chip->setProperty("kind", kind);
     chip->setAlignment(Qt::AlignCenter);
-    chip->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Fixed);
+
+    QFont font = chip->font();
+    font.setPixelSize(kChipFontPx);
+    font.setBold(true);
+    chip->setFont(font);
+
     chip->setFixedHeight(22);
+    chip->setFixedWidth(QFontMetrics(font).horizontalAdvance(text) + kChipHorizontalPadding);
     return chip;
 }
 
