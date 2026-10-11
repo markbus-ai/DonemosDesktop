@@ -52,6 +52,7 @@ PacienteDetalleDialog::PacienteDetalleDialog(ApiClient *api,
 
     auto *buttons = new QDialogButtonBox(QDialogButtonBox::Close, this);
     buttons->button(QDialogButtonBox::Close)->setText(QStringLiteral("Cerrar"));
+    clearButtonIcon(buttons->button(QDialogButtonBox::Close));
     buttons->button(QDialogButtonBox::Close)->setCursor(Qt::PointingHandCursor);
     connect(buttons, &QDialogButtonBox::rejected, this, &QDialog::reject);
 

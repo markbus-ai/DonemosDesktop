@@ -1,6 +1,7 @@
 #include "ui/dialogs/TurnoWarningDialog.h"
 
 #include "ui/Theme.h"
+#include "ui/UiUtils.h"
 #include "ui/components/Card.h"
 
 #include <QDialogButtonBox>
@@ -49,11 +50,12 @@ TurnoWarningDialog::TurnoWarningDialog(const QString &message,
 
     auto *buttons = new QDialogButtonBox(QDialogButtonBox::Cancel, this);
     buttons->button(QDialogButtonBox::Cancel)->setText(QStringLiteral("Cancelar"));
+    clearButtonIcon(buttons->button(QDialogButtonBox::Cancel));
     buttons->button(QDialogButtonBox::Cancel)->setCursor(Qt::PointingHandCursor);
 
     auto *forceButton = buttons->addButton(QStringLiteral("Forzar turno"),
                                            QDialogButtonBox::AcceptRole);
-    forceButton->setProperty("variant", "primary");
+    applyPrimaryVariant(forceButton);
     forceButton->setCursor(Qt::PointingHandCursor);
     forceButton->setDefault(true);
 

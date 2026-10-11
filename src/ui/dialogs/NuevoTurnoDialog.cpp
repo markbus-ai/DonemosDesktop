@@ -2,6 +2,7 @@
 
 #include "api/ApiClient.h"
 #include "ui/Theme.h"
+#include "ui/UiUtils.h"
 #include "ui/dialogs/TurnoWarningDialog.h"
 
 #include <QComboBox>
@@ -51,7 +52,9 @@ NuevoTurnoDialog::NuevoTurnoDialog(ApiClient *api, QWidget *parent)
 
     m_buttons->button(QDialogButtonBox::Ok)->setText(QStringLiteral("Crear turno"));
     m_buttons->button(QDialogButtonBox::Cancel)->setText(QStringLiteral("Cancelar"));
-    m_buttons->button(QDialogButtonBox::Ok)->setProperty("variant", "primary");
+    applyPrimaryVariant(m_buttons->button(QDialogButtonBox::Ok));
+    clearButtonIcon(m_buttons->button(QDialogButtonBox::Ok));
+    clearButtonIcon(m_buttons->button(QDialogButtonBox::Cancel));
     m_buttons->button(QDialogButtonBox::Ok)->setCursor(Qt::PointingHandCursor);
     m_buttons->button(QDialogButtonBox::Cancel)->setCursor(Qt::PointingHandCursor);
     m_buttons->button(QDialogButtonBox::Ok)->setDefault(true);
