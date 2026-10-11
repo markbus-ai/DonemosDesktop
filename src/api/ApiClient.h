@@ -55,6 +55,7 @@ public:
     void get(const QString &path, Callback callback);
     void post(const QString &path, const QJsonObject &body, Callback callback);
     void patch(const QString &path, const QJsonObject &body, Callback callback);
+    void del(const QString &path, Callback callback);
 
 signals:
     /** Emitted when an authenticated request is rejected with 401. */

@@ -3,6 +3,7 @@
 #include "api/ApiClient.h"
 #include "ui/IconFactory.h"
 #include "ui/Theme.h"
+#include "ui/pages/AptitudPage.h"
 #include "ui/pages/InicioPage.h"
 #include "ui/pages/PacientesPage.h"
 #include "ui/pages/PlaceholderPage.h"
@@ -26,6 +27,7 @@ MainWindow::MainWindow(ApiClient *api, const QString &username, QWidget *parent)
     , m_inicioPage(new InicioPage(username, this))
     , m_pacientesPage(new PacientesPage(api, this))
     , m_turnosPage(new TurnosPage(api, this))
+    , m_aptitudPage(new AptitudPage(api, this))
 {
     setWindowTitle(QStringLiteral("Donemos Desktop"));
     setMinimumSize(1040, 660);
@@ -38,10 +40,7 @@ MainWindow::MainWindow(ApiClient *api, const QString &username, QWidget *parent)
     m_pages->addWidget(m_inicioPage);
     m_pages->addWidget(m_pacientesPage);
     m_pages->addWidget(m_turnosPage);
-    m_pages->addWidget(new PlaceholderPage(QStringLiteral("Aptitud"),
-                                           QStringLiteral("Consulte y gestione la aptitud y los "
-                                                          "diferimientos de los donantes."),
-                                           IconFactory::Section::Aptitud, this));
+    m_pages->addWidget(m_aptitudPage);
     m_pages->addWidget(new PlaceholderPage(QStringLiteral("Donaciones"),
                                            QStringLiteral("Registre y haga seguimiento de las "
                                                           "donaciones de sangre."),
@@ -146,4 +145,6 @@ void MainWindow::onNavigationChanged(int row)
         m_pacientesPage->refresh();
     else if (m_pages->currentWidget() == m_turnosPage)
         m_turnosPage->refresh();
+    else if (m_pages->currentWidget() == m_aptitudPage)
+        m_aptitudPage->refresh();
 }

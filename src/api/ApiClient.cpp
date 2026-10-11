@@ -110,6 +110,11 @@ void ApiClient::patch(const QString &path, const QJsonObject &body, Callback cal
     send("PATCH", path, body, std::move(callback));
 }
 
+void ApiClient::del(const QString &path, Callback callback)
+{
+    send("DELETE", path, {}, std::move(callback));
+}
+
 void ApiClient::send(const QByteArray &verb,
                      const QString &path,
                      const QJsonObject &body,

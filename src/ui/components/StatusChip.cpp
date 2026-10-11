@@ -4,6 +4,7 @@
 #include <QFontMetrics>
 #include <QHBoxLayout>
 #include <QLabel>
+#include <QStyle>
 #include <QWidget>
 
 namespace StatusChip {
@@ -44,6 +45,21 @@ QWidget *makeCell(const QString &text, const QString &kind, QWidget *parent)
     layout->addWidget(make(text, kind, cell), 0, Qt::AlignLeft | Qt::AlignVCenter);
     layout->addStretch();
     return cell;
+}
+
+void update(QLabel *chip, const QString &text, const QString &kind)
+{
+    chip->setText(text);
+    chip->setProperty("kind", kind);
+
+    QFont font = chip->font();
+    font.setPixelSize(kChipFontPx);
+    font.setBold(true);
+    chip->setFont(font);
+    chip->setFixedWidth(QFontMetrics(font).horizontalAdvance(text) + kChipHorizontalPadding);
+
+    chip->style()->unpolish(chip);
+    chip->style()->polish(chip);
 }
 
 QString aptitudKind(const QString &tipo)

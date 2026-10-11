@@ -21,6 +21,12 @@ QLabel *make(const QString &text, const QString &kind, QWidget *parent = nullptr
  */
 QWidget *makeCell(const QString &text, const QString &kind, QWidget *parent = nullptr);
 
+/**
+ * Update an existing chip's label and semantic kind, re-applying the fixed
+ * width derived from font metrics so longer labels never clip.
+ */
+void update(QLabel *chip, const QString &text, const QString &kind);
+
 /** Semantic kind for an aptitud code (APTO / APTO_OBSERVACION / NO_APTO). */
 QString aptitudKind(const QString &tipo);
 

@@ -3,6 +3,7 @@
 #include <QMainWindow>
 
 class ApiClient;
+class AptitudPage;
 class InicioPage;
 class PacientesPage;
 class TurnosPage;
@@ -34,4 +35,5 @@ private:
     InicioPage *m_inicioPage;
     PacientesPage *m_pacientesPage;
     TurnosPage *m_turnosPage;
+    AptitudPage *m_aptitudPage;
 };
