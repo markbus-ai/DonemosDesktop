@@ -134,6 +134,32 @@ DonacionDetalleDialog::DonacionDetalleDialog(const QJsonObject &donation, QWidge
     cardsRow->addWidget(bagCard, 1);
     cardsRow->addWidget(clinicalCard, 1);
 
+    // --- Donation cycle ------------------------------------------------------
+    auto *cycleCard = new Card(this);
+    auto *cycleTitle = new QLabel(QStringLiteral("Ciclo de donaciones"), cycleCard);
+    cycleTitle->setObjectName(QStringLiteral("CardTitle"));
+
+    auto *cycleRow = new QHBoxLayout;
+    cycleRow->setSpacing(Theme::SpacingXl);
+    const auto addCycleField = [cycleCard, cycleRow](const QString &label, const QJsonValue &value) {
+        auto *column = new QVBoxLayout;
+        column->setSpacing(Theme::SpacingXs);
+        auto *fieldLabel = new QLabel(label, cycleCard);
+        fieldLabel->setObjectName(QStringLiteral("FieldLabel"));
+        auto *fieldValue = new QLabel(display(value), cycleCard);
+        fieldValue->setTextInteractionFlags(Qt::TextSelectableByMouse);
+        column->addWidget(fieldLabel);
+        column->addWidget(fieldValue);
+        cycleRow->addLayout(column);
+    };
+    addCycleField(QStringLiteral("Ciclo"), donation.value(QStringLiteral("ciclo")));
+    addCycleField(QStringLiteral("Serie"), donation.value(QStringLiteral("serie")));
+    addCycleField(QStringLiteral("Donación"), donation.value(QStringLiteral("donacion")));
+    cycleRow->addStretch();
+
+    cycleCard->addWidget(cycleTitle);
+    cycleCard->addLayout(cycleRow);
+
     // --- Components ----------------------------------------------------------
     auto *componentsCard = new Card(this);
     auto *componentsTitle = new QLabel(QStringLiteral("Componentes"), componentsCard);
@@ -192,6 +218,7 @@ DonacionDetalleDialog::DonacionDetalleDialog(const QJsonObject &donation, QWidge
     layout->addWidget(subtitle);
     layout->addLayout(chipsRow);
     layout->addLayout(cardsRow);
+    layout->addWidget(cycleCard);
     layout->addWidget(componentsCard, 1);
     layout->addLayout(buttonsRow);
 }

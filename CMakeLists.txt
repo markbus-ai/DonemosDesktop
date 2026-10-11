@@ -61,6 +61,8 @@ add_executable(DonemosDesktop
     src/ui/dialogs/NuevoPacienteDialog.h
     src/ui/dialogs/PacienteDetalleDialog.cpp
     src/ui/dialogs/PacienteDetalleDialog.h
+    src/ui/dialogs/EditarCicloDialog.cpp
+    src/ui/dialogs/EditarCicloDialog.h
     src/ui/dialogs/DonacionDetalleDialog.cpp
     src/ui/dialogs/DonacionDetalleDialog.h
     src/ui/dialogs/AptitudDialog.cpp

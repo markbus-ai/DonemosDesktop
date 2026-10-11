@@ -46,6 +46,7 @@ AptitudPage::AptitudPage(ApiClient *api, QWidget *parent)
     , m_deferralChip(StatusChip::make(QString(), QStringLiteral("muted"), m_patientCard))
     , m_plateletChip(StatusChip::make(QString(), QStringLiteral("muted"), m_patientCard))
     , m_plateletInfo(new QLabel(m_patientCard))
+    , m_cicloInfo(new QLabel(m_patientCard))
     , m_changeAptitudButton(new QPushButton(QStringLiteral("Cambiar aptitud"), m_patientCard))
     , m_addObservacionButton(new QPushButton(QStringLiteral("Agregar observación"), m_patientCard))
     , m_removeObservacionButton(new QPushButton(QStringLiteral("Quitar observación"), m_patientCard))
@@ -102,6 +103,10 @@ AptitudPage::AptitudPage(ApiClient *api, QWidget *parent)
     plateletTitle->setObjectName(QStringLiteral("FieldLabel"));
     m_plateletInfo->setObjectName(QStringLiteral("InfoText"));
 
+    auto *cycleTitle = new QLabel(QStringLiteral("Ciclo de donaciones"), m_patientCard);
+    cycleTitle->setObjectName(QStringLiteral("FieldLabel"));
+    m_cicloInfo->setObjectName(QStringLiteral("InfoText"));
+
     auto *stateGrid = new QGridLayout;
     stateGrid->setHorizontalSpacing(Theme::SpacingMd);
     stateGrid->setVerticalSpacing(Theme::SpacingSm);
@@ -110,6 +115,8 @@ AptitudPage::AptitudPage(ApiClient *api, QWidget *parent)
     stateGrid->addWidget(plateletTitle, 1, 0);
     stateGrid->addWidget(m_plateletChip, 1, 1, Qt::AlignLeft);
     stateGrid->addWidget(m_plateletInfo, 1, 2, Qt::AlignLeft);
+    stateGrid->addWidget(cycleTitle, 2, 0);
+    stateGrid->addWidget(m_cicloInfo, 2, 1, 1, 2, Qt::AlignLeft);
     stateGrid->setColumnStretch(3, 1);
 
     // --- Actions -------------------------------------------------------------
@@ -242,6 +249,17 @@ void AptitudPage::renderPatient()
                                            : QStringLiteral("Sin diferimiento"),
                        m_hasActiveDeferral ? QStringLiteral("warning") : QStringLiteral("muted"));
     m_removeRestriccionButton->setEnabled(m_hasActiveDeferral);
+
+    const auto counterOrDash = [this](const QString &key) -> QString {
+        const QJsonValue value = m_patient.value(key);
+        if (value.isNull() || value.isUndefined())
+            return QStringLiteral("—");
+        return QString::number(value.toVariant().toLongLong());
+    };
+    m_cicloInfo->setText(QStringLiteral("Ciclo %1  ·  Serie %2  ·  Donación %3")
+                             .arg(counterOrDash(QStringLiteral("ciclo_actual")),
+                                  counterOrDash(QStringLiteral("serie_actual")),
+                                  counterOrDash(QStringLiteral("donacion_actual"))));
 }
 
 void AptitudPage::loadPlatelets()

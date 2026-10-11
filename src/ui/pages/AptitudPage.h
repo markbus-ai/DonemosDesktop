@@ -57,6 +57,7 @@ private:
     QLabel *m_deferralChip;
     QLabel *m_plateletChip;
     QLabel *m_plateletInfo;
+    QLabel *m_cicloInfo;
 
     QPushButton *m_changeAptitudButton;
     QPushButton *m_addObservacionButton;
