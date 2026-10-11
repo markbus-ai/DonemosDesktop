@@ -80,7 +80,10 @@ target_include_directories(DonemosDesktop PRIVATE src)
 qt_add_resources(DonemosDesktop "brand"
     PREFIX "/"
     BASE resources
-    FILES resources/style.qss
+    FILES
+        resources/style.qss
+        resources/down-arrow.png
+        resources/up-arrow.png
 )
 
 target_link_libraries(DonemosDesktop PRIVATE
