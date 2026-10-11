@@ -4,6 +4,7 @@
 
 class ApiClient;
 class AptitudPage;
+class DonacionesPage;
 class InicioPage;
 class PacientesPage;
 class TurnosPage;
@@ -36,4 +37,5 @@ private:
     PacientesPage *m_pacientesPage;
     TurnosPage *m_turnosPage;
     AptitudPage *m_aptitudPage;
+    DonacionesPage *m_donacionesPage;
 };

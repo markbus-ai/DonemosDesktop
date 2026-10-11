@@ -50,6 +50,8 @@ add_executable(DonemosDesktop
     src/ui/pages/AptitudPage.h
     src/ui/pages/PacientesPage.cpp
     src/ui/pages/PacientesPage.h
+    src/ui/pages/DonacionesPage.cpp
+    src/ui/pages/DonacionesPage.h
     src/ui/pages/TurnosPage.cpp
     src/ui/pages/TurnosPage.h
     src/ui/pages/PlaceholderPage.cpp
@@ -59,6 +61,8 @@ add_executable(DonemosDesktop
     src/ui/dialogs/NuevoPacienteDialog.h
     src/ui/dialogs/PacienteDetalleDialog.cpp
     src/ui/dialogs/PacienteDetalleDialog.h
+    src/ui/dialogs/DonacionDetalleDialog.cpp
+    src/ui/dialogs/DonacionDetalleDialog.h
     src/ui/dialogs/AptitudDialog.cpp
     src/ui/dialogs/AptitudDialog.h
     src/ui/dialogs/DeferralDialog.cpp
