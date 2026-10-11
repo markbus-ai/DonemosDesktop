@@ -6,13 +6,11 @@
 
 #include <QLabel>
 #include <QHBoxLayout>
-#include <QPixmap>
-#include <QStyle>
 #include <QVBoxLayout>
 
 PlaceholderPage::PlaceholderPage(const QString &title,
                                  const QString &message,
-                                 QStyle::StandardPixmap icon,
+                                 IconFactory::Section section,
                                  QWidget *parent)
     : QWidget(parent)
 {
@@ -23,7 +21,8 @@ PlaceholderPage::PlaceholderPage(const QString &title,
     card->body()->setSpacing(Theme::SpacingSm);
 
     auto *iconLabel = new QLabel(card);
-    iconLabel->setPixmap(style()->standardIcon(icon).pixmap(48, 48));
+    // Muted tint: the module is not available yet, never a success/green mark.
+    iconLabel->setPixmap(IconFactory::pixmap(section, 48, Theme::color(Theme::TextSecondary)));
     iconLabel->setAlignment(Qt::AlignHCenter);
 
     auto *titleLabel = new QLabel(title, card);

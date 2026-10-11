@@ -1,6 +1,7 @@
 #include "ui/MainWindow.h"
 
 #include "api/ApiClient.h"
+#include "ui/IconFactory.h"
 #include "ui/Theme.h"
 #include "ui/pages/InicioPage.h"
 #include "ui/pages/PacientesPage.h"
@@ -15,7 +16,6 @@
 #include <QListWidgetItem>
 #include <QPushButton>
 #include <QStackedWidget>
-#include <QStyle>
 #include <QVBoxLayout>
 #include <QWidget>
 
@@ -41,15 +41,15 @@ MainWindow::MainWindow(ApiClient *api, const QString &username, QWidget *parent)
     m_pages->addWidget(new PlaceholderPage(QStringLiteral("Aptitud"),
                                            QStringLiteral("Consulte y gestione la aptitud y los "
                                                           "diferimientos de los donantes."),
-                                           QStyle::SP_DialogApplyButton, this));
+                                           IconFactory::Section::Aptitud, this));
     m_pages->addWidget(new PlaceholderPage(QStringLiteral("Donaciones"),
                                            QStringLiteral("Registre y haga seguimiento de las "
                                                           "donaciones de sangre."),
-                                           QStyle::SP_DialogSaveButton, this));
+                                           IconFactory::Section::Donaciones, this));
     m_pages->addWidget(new PlaceholderPage(QStringLiteral("Reportes"),
                                            QStringLiteral("Genere reportes operativos y "
                                                           "estadísticas del banco de sangre."),
-                                           QStyle::SP_FileDialogInfoView, this));
+                                           IconFactory::Section::Reportes, this));
 
     auto *central = new QWidget(this);
     central->setObjectName(QStringLiteral("CentralArea"));
@@ -95,16 +95,17 @@ QWidget *MainWindow::buildSidebar(const QString &username)
     m_sidebar->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     m_sidebar->setSpacing(0);
     m_sidebar->setUniformItemSizes(true);
+    m_sidebar->setIconSize(QSize(20, 20));
 
-    const auto navIcon = [this](QStyle::StandardPixmap pixmap) {
-        return style()->standardIcon(pixmap);
+    const auto addNavItem = [this](IconFactory::Section section, const QString &label) {
+        m_sidebar->addItem(new QListWidgetItem(IconFactory::navIcon(section), label));
     };
-    m_sidebar->addItem(new QListWidgetItem(navIcon(QStyle::SP_DirHomeIcon), QStringLiteral("Inicio")));
-    m_sidebar->addItem(new QListWidgetItem(navIcon(QStyle::SP_FileDialogListView), QStringLiteral("Pacientes")));
-    m_sidebar->addItem(new QListWidgetItem(navIcon(QStyle::SP_FileDialogDetailedView), QStringLiteral("Turnos")));
-    m_sidebar->addItem(new QListWidgetItem(navIcon(QStyle::SP_DialogApplyButton), QStringLiteral("Aptitud")));
-    m_sidebar->addItem(new QListWidgetItem(navIcon(QStyle::SP_DialogSaveButton), QStringLiteral("Donaciones")));
-    m_sidebar->addItem(new QListWidgetItem(navIcon(QStyle::SP_FileDialogInfoView), QStringLiteral("Reportes")));
+    addNavItem(IconFactory::Section::Inicio, QStringLiteral("Inicio"));
+    addNavItem(IconFactory::Section::Pacientes, QStringLiteral("Pacientes"));
+    addNavItem(IconFactory::Section::Turnos, QStringLiteral("Turnos"));
+    addNavItem(IconFactory::Section::Aptitud, QStringLiteral("Aptitud"));
+    addNavItem(IconFactory::Section::Donaciones, QStringLiteral("Donaciones"));
+    addNavItem(IconFactory::Section::Reportes, QStringLiteral("Reportes"));
 
     layout->addWidget(m_sidebar);
     layout->addStretch();

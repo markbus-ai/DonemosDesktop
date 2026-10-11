@@ -27,6 +27,9 @@ add_executable(DonemosDesktop
     src/ui/Theme.cpp
     src/ui/Theme.h
 
+    src/ui/IconFactory.cpp
+    src/ui/IconFactory.h
+
     src/ui/components/Card.cpp
     src/ui/components/Card.h
     src/ui/components/DataTable.cpp

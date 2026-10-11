@@ -1,6 +1,7 @@
 #pragma once
 
-#include <QStyle>
+#include "ui/IconFactory.h"
+
 #include <QWidget>
 
 /**
@@ -15,6 +16,6 @@ class PlaceholderPage : public QWidget
 public:
     PlaceholderPage(const QString &title,
                     const QString &message,
-                    QStyle::StandardPixmap icon,
+                    IconFactory::Section section,
                     QWidget *parent = nullptr);
 };
