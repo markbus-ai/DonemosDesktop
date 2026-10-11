@@ -52,10 +52,10 @@ add_executable(DonemosDesktop
     src/ui/pages/PacientesPage.h
     src/ui/pages/DonacionesPage.cpp
     src/ui/pages/DonacionesPage.h
+    src/ui/pages/ReportesPage.cpp
+    src/ui/pages/ReportesPage.h
     src/ui/pages/TurnosPage.cpp
     src/ui/pages/TurnosPage.h
-    src/ui/pages/PlaceholderPage.cpp
-    src/ui/pages/PlaceholderPage.h
 
     src/ui/dialogs/NuevoPacienteDialog.cpp
     src/ui/dialogs/NuevoPacienteDialog.h

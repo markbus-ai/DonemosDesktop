@@ -7,7 +7,7 @@
 #include "ui/pages/DonacionesPage.h"
 #include "ui/pages/InicioPage.h"
 #include "ui/pages/PacientesPage.h"
-#include "ui/pages/PlaceholderPage.h"
+#include "ui/pages/ReportesPage.h"
 #include "ui/pages/TurnosPage.h"
 
 #include <QAbstractItemView>
@@ -30,6 +30,7 @@ MainWindow::MainWindow(ApiClient *api, const QString &username, QWidget *parent)
     , m_turnosPage(new TurnosPage(api, this))
     , m_aptitudPage(new AptitudPage(api, this))
     , m_donacionesPage(new DonacionesPage(api, this))
+    , m_reportesPage(new ReportesPage(api, this))
 {
     setWindowTitle(QStringLiteral("Donemos Desktop"));
     setMinimumSize(1040, 660);
@@ -44,10 +45,7 @@ MainWindow::MainWindow(ApiClient *api, const QString &username, QWidget *parent)
     m_pages->addWidget(m_turnosPage);
     m_pages->addWidget(m_aptitudPage);
     m_pages->addWidget(m_donacionesPage);
-    m_pages->addWidget(new PlaceholderPage(QStringLiteral("Reportes"),
-                                           QStringLiteral("Genere reportes operativos y "
-                                                          "estadísticas del banco de sangre."),
-                                           IconFactory::Section::Reportes, this));
+    m_pages->addWidget(m_reportesPage);
 
     auto *central = new QWidget(this);
     central->setObjectName(QStringLiteral("CentralArea"));
@@ -148,4 +146,6 @@ void MainWindow::onNavigationChanged(int row)
         m_aptitudPage->refresh();
     else if (m_pages->currentWidget() == m_donacionesPage)
         m_donacionesPage->refresh();
+    else if (m_pages->currentWidget() == m_reportesPage)
+        m_reportesPage->refresh();
 }

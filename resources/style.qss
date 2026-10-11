@@ -332,6 +332,20 @@ QTableCornerButton::section {
     background: transparent;
 }
 
+/* --- Progress bars -------------------------------------------------------- */
+QProgressBar {
+    background-color: #F2F2F7;
+    border: none;
+    border-radius: 6px;
+    min-height: 12px;
+    max-height: 12px;
+}
+
+QProgressBar::chunk {
+    background-color: #E5484D;
+    border-radius: 6px;
+}
+
 /* --- State labels --------------------------------------------------------- */
 #EmptyState,
 #LoadingState {

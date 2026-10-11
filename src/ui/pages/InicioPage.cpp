@@ -85,12 +85,12 @@ InicioPage::InicioPage(const QString &username, QWidget *parent)
     quickLinks->addWidget(pacientesCard, 1);
     quickLinks->addWidget(turnosCard, 1);
 
-    // --- Modules in preparation ---------------------------------------------
+    // --- Available modules ---------------------------------------------------
     auto *modules = new Card(this);
-    auto *modulesTitle = new QLabel(QStringLiteral("Módulos en preparación"), modules);
+    auto *modulesTitle = new QLabel(QStringLiteral("Módulos disponibles"), modules);
     modulesTitle->setObjectName(QStringLiteral("CardTitle"));
     auto *modulesText = new QLabel(
-        QStringLiteral("Aptitud, Donaciones y Reportes estarán disponibles en una próxima versión."),
+        QStringLiteral("Aptitud, Donaciones y Reportes también están disponibles desde el menú lateral."),
         modules);
     modulesText->setObjectName(QStringLiteral("CardText"));
     modulesText->setWordWrap(true);

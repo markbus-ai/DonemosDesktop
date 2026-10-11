@@ -7,6 +7,7 @@ class AptitudPage;
 class DonacionesPage;
 class InicioPage;
 class PacientesPage;
+class ReportesPage;
 class TurnosPage;
 class QListWidget;
 class QStackedWidget;
@@ -38,4 +39,5 @@ private:
     TurnosPage *m_turnosPage;
     AptitudPage *m_aptitudPage;
     DonacionesPage *m_donacionesPage;
+    ReportesPage *m_reportesPage;
 };
