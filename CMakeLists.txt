@@ -64,6 +64,7 @@ target_include_directories(DonemosDesktop PRIVATE src)
 
 qt_add_resources(DonemosDesktop "brand"
     PREFIX "/"
+    BASE resources
     FILES resources/style.qss
 )
 
